@@ -1,0 +1,121 @@
+// @version=5
+indicator('24hr High/Low/Mid', overlay=true)
+
+// Calculate the High/Low/Mid in the last 24 hours
+var tf = 6
+if (timeframe.period == '60')// 1 hour chart
+    tf := 24
+if (timeframe.period == '4')// 4 hour chart
+    tf := 6
+if (timeframe.period == 'D')// 1 day chart
+    tf := 1
+if (timeframe.period == '1')// 1 min chart
+    tf := 1440
+if (timeframe.period == '5')// 5 min chart
+    tf := 288
+if (timeframe.period == '15')// 15 min chart
+    tf := 96
+if (timeframe.period == '30')// 30 min chart
+    tf := 48
+
+low24 = ta.lowest(low, tf)
+high24 = ta.highest(high, tf)
+mid24 = (low24 + high24) / 2
+
+// Calculate the High/Low/Mid in the last 48 hours
+var tf2d = 12
+if (timeframe.period == '60')// 1 hour chart
+    tf2d := 48
+if (timeframe.period == '4')// 4 hour chart
+    tf2d := 12
+if (timeframe.period == 'D')// 1 day chart
+    tf2d := 2
+if (timeframe.period == '1')// 1 min chart
+    tf2d := 2880
+if (timeframe.period == '5')// 5 min chart
+    tf2d := 576
+if (timeframe.period == '15')// 15 min chart
+    tf2d := 192
+if (timeframe.period == '30')// 30 min chart
+    tf2d := 96
+
+low48 = ta.lowest(low, tf2d)
+high48 = ta.highest(high, tf2d)
+mid48 = (low24 + high24) / 2
+
+// Calculate the High/Low/Mid in the last 7d hours
+var tf7d = 42
+if (timeframe.period == '60')// 1 hour chart
+    tf7d := 168
+if (timeframe.period == '4')// 4 hour chart
+    tf7d := 42
+if (timeframe.period == 'D')// 1 day chart
+    tf7d := 7
+if (timeframe.period == '1')// 1 min chart
+    tf7d := 10080
+if (timeframe.period == '5')// 5 min chart
+    tf7d := 2016
+if (timeframe.period == '15')// 15 min chart
+    tf7d := 672
+if (timeframe.period == '30')// 30 min chart
+    tf7d := 336
+
+low7d = ta.lowest(low, tf7d)
+high7d = ta.highest(high, tf7d)
+mid7d = (low7d + high7d) / 2
+
+// Plot the 24 Hour high/low/mid line on the chart
+plot(low24, color=color.new(color.red, 0), linewidth=1, title='24hr Low')
+plot(high24, color=color.new(color.green, 0), linewidth=1, title='24hr High')
+plot(mid24, color=color.new(color.blue, 0), linewidth=1, title='24hr Mid')
+
+// Plot the 48 Hour high/low/mid line on the chart
+plot(low48, color=color.new(color.orange, 0), linewidth=1, title='48hr Low')
+plot(high48, color=color.new(color.lime, 0), linewidth=1, title='48hr High')
+plot(mid48, color=color.new(color.teal, 0), linewidth=1, title='48hr Mid')
+
+// Plot the 7 day high/low/mid line on the chart
+plot(low7d, color=color.new(#3f3c3c, 0), linewidth=1, title='7d Low')
+plot(high7d, color=color.new(#3f3c3c, 0), linewidth=1, title='7d High')
+plot(mid7d, color=color.new(#3f3c3c, 0), linewidth=1, title='7d Mid')
+
+//Calculates fibs
+fib = (high7d - low7d)
+fib236 = fib * .236 + low7d
+fib382 = fib * .382 + low7d
+fib50 = fib * .50 + low7d
+fib618 = fib * .618 + low7d
+fib786 = fib * .786 + low7d
+
+// Plot the 7 day fibs/236/382/50/618/786 line on the chart
+plot(fib236, color=color.new(color.purple, 0), linewidth=1, title='.236')
+plot(fib382, color=color.new(color.purple, 0), linewidth=1, title='.382')
+plot(fib50, color=color.new(color.purple, 0), linewidth=1, title='.500')
+plot(fib618, color=color.new(color.purple, 0), linewidth=1, title='.618')
+plot(fib786, color=color.new(color.purple, 0), linewidth=1, title='.786')
+
+//Calculates fibs
+fib2 = (low7d - high7d)
+fiblow236 = fib2 * .236 + low7d
+fiblow382 = fib2 * .382 + low7d
+fiblow50 = fib2 * .50 + low7d
+fiblow618 = fib2 * .618 + low7d
+fiblow786 = fib2 * .786 + low7d
+
+// Plot the 7 day fibs/236/382/50/618/786 line on the chart
+plot(fiblow236, color=color.new(color.purple, 0), linewidth=1, title='.236')
+plot(fiblow382, color=color.new(color.purple, 0), linewidth=1, title='.382')
+plot(fiblow50, color=color.new(color.purple, 0), linewidth=1, title='.500')
+plot(fiblow618, color=color.new(color.purple, 0), linewidth=1, title='.618')
+plot(fiblow786, color=color.new(color.purple, 0), linewidth=1, title='.786')
+
+// Shows crosses and yellow doji with a body size of .15 which can be adjusted
+accuracy = input.float(0.15, minval=0.001, title="Doji Body Size")
+showcross = input(false, title="Show Cross")
+
+// Calculates doji's
+barcolor(math.abs(open - close)<=(high - low) * accuracy ? color.yellow : na)
+doji = math.abs(open - close)<=(high - low) * accuracy ? 1 : 0
+
+// Plot doji's on the chart
+plotshape(showcross ? doji : na, style=shape.cross, color=color.new(color.yellow, 0), location=location.abovebar, size=size.tiny, title="Doji Highlighter")
